@@ -1,0 +1,151 @@
+<html>
+<head>
+
+<title>CAS Meal Plan Calculator</title>
+
+<script src="js/jquery-2.1.0.min.js"></script>
+<script>
+
+function setType(Type) {
+
+    // Set the type of meal plan being used.
+    // 0 - Platinum = 1920
+
+    var max = 0;
+
+    if (Type == 0) {
+        max = 1920;
+    } else if (Type ==1) {
+        max = 1744;
+    } else if (Type ==2) {
+        max = 1526;
+    }
+
+
+    $("mealplan").attr("max",max);
+    $("#meal_label").html("$" + max);
+    $("#plan_type").val(Type);
+
+    $(".balance").fadeIn();
+}
+
+function update() {
+
+    // Calculate amount of meal plan for the day.
+    var type = $("#plan_type").val();
+    console.log(type);
+
+    var mealplan_value = $("#mealplan").val();
+    var flex_value = $("#flex").val();
+
+
+    var initial_balance = 0;
+    var final_balance = 0;
+
+    if (type == 0) {
+        initial_balance = 1920.00;
+        final_balance = 90;
+    } else if (type == 1) {
+        initial_balance = 1744.00;
+        final_balance = 80;
+    } else if (type == 2) {
+        initial_balance = 1526.00;
+        final_balance = 70;
+    }
+
+    var currentTime = Date.now();
+    var initialDate = new Date(2014,0,19,0,0,0,0).getTime();
+    var deltaDate = Math.floor((currentTime - initialDate) / (1000 * 60 * 60 * 24));
+    var budget = initial_balance + (((final_balance - initial_balance) / 112) * deltaDate);
+
+    console.log("Budget: " + initial_balance);
+    var currentBalance = parseFloat(mealplan_value) + parseFloat(flex_value);
+    var difference = currentBalance - budget;
+
+    if (difference >= 0) {
+        $("#total").html( "$" + difference.toFixed(2) + " under budget");
+        $("#total").css("color","black")
+    } else {
+        $("#total").html("$" + Math.abs(difference).toFixed(2) + " over budget");
+        $("#total").css("color","red")
+    }
+
+    $(".budget").fadeIn();    
+
+}
+
+function reloadInputs(level) {
+
+    // Set the text fields to the same values of the range.
+    
+
+    var mealplan_value = $("#mealplan").val();
+    $("#meal_value").val(mealplan_value);
+
+    var flex_value = $("#flex").val();
+    $("#flex_value").val(flex_value);
+
+}
+
+function reloadRanges(level) {
+
+    // Set the text fields to the same values of the range.
+    
+    var mealplan_value = $("#meal_value").val();
+    $("#mealplan").val(mealplan_value);
+
+    var flex_value = $("#flex_value").val();
+    $("#flex").val(flex_value);
+}
+
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="style.css">
+
+</head>
+
+<body>
+<input type=hidden id=plan_type />
+
+    <div class=pane>
+    <h2>CAS Meal Plan Calculator</h2> 
+    <div class="first selection"> 
+        <b>Plan Type</b>
+        <br>
+        <button onclick=setType(0); class="left">Platinum</button>
+        <button onclick=setType(1); class="center">Gold</button>
+        <button onclick=setType(2); class="right">Silver</button>
+    </div>
+
+    <div class="balance hidden selection">
+        <b>Meal Plan</b>
+        <br>
+        $0<input type=range id=mealplan min=0, max=1920 value=100 onchange=reloadInputs(2); />
+        <span id=meal_label>$1920</span>
+        <input type=number value="175" id=meal_value onchange=reloadRanges(2); />
+    </div>
+
+    <div class="balance hidden selection">
+        <b>Flex</b>
+        <br>
+        $0<input type=range id=flex min=0, max=175 value=100 onchange=reloadInputs(3); />
+        <span id=flex_label>$175</span>
+        <input type=number value="175" id=flex_value onchange=reloadRanges(3); />
+    </div>
+
+    <div class="balance hidden selection">
+        <button class=final_button onclick=update();>Calculate!</button>
+    </div>
+
+    <div class="budget hidden">
+        <span id=total></span>
+    </div>
+    </div>
+    <br>
+    <footer><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">CAS Meal Plan Calculator</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="nicholasyager.com" property="cc:attributionName" rel="cc:attributionURL">Nicholas A. Yager</a> is licensed under <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a></footer>
+
+</body>
+
+
+</html>
